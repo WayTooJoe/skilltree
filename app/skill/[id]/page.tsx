@@ -9,24 +9,30 @@ interface PageProps {
 }
 
 async function fetchSkill(id: string): Promise<SkillNode | null> {
-  const { data, error } = await supabase
-    .from('skill_nodes')
-    .select('*')
-    .eq('id', id)
-    .single();
+  try {
+    const { data, error } = await supabase
+      .from('skill_nodes')
+      .select('*')
+      .eq('id', id)
+      .single();
 
-  if (error || !data) {
-    console.error('Error loading skill detail:', error);
+    if (error || !data) {
+      console.warn('Error loading skill detail or no row found:', error);
+      return null;
+    }
+
+    return {
+      id: data.id,
+      title: data.title,
+      category: data.category ?? 'Other',
+      videoPath: data.video_url, // matches your column
+      createdAt: data.created_at,
+      description: data.description ?? undefined,
+    };
+  } catch (err) {
+    console.warn('Unexpected error loading skill detail:', err);
     return null;
   }
-
-  return {
-    id: data.id,
-    title: data.title,
-    category: data.category ?? 'Other',
-    videoPath: data.video_path,
-    createdAt: data.created_at,
-  };
 }
 
 export default async function SkillDetailPage({ params }: PageProps) {
@@ -34,13 +40,13 @@ export default async function SkillDetailPage({ params }: PageProps) {
 
   if (!skill) {
     return (
-      <div>
-        <p className="text-sm text-slate-400 mb-3">
-          Skill not found or has been deleted.
-        </p>
+      <div className="space-y-3">
         <a href="/" className="text-sm text-sky-300 hover:text-sky-200">
           ← Back to skills
         </a>
+        <p className="text-sm text-slate-400">
+          Skill not found or has been deleted.
+        </p>
       </div>
     );
   }
@@ -66,6 +72,12 @@ export default async function SkillDetailPage({ params }: PageProps) {
         <p className="text-xs text-slate-500">
           Recorded {new Date(skill.createdAt).toLocaleString()}
         </p>
+
+        {skill.description && (
+          <p className="text-sm text-slate-300 mt-2 whitespace-pre-line">
+            {skill.description}
+          </p>
+        )}
       </div>
 
       <div className="rounded-lg border border-slate-800 bg-slate-900/70 p-3">
