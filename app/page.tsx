@@ -1,9 +1,10 @@
 // app/page.tsx
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
-import { SkillNode } from '@/lib/types';
+import { SkillNode, SkillNodeRow } from '@/lib/types';
 import {
   loadLocalSkills,
   saveLocalSkills,
@@ -41,7 +42,7 @@ export default function HomePage() {
       }
      
       const mapped: SkillNode[] =
-        data?.map((row: any) => ({
+        (data as SkillNodeRow[] | null)?.map((row) => ({
           id: row.id,
           title: row.title,
           category: row.category ?? 'Other',
@@ -98,7 +99,7 @@ export default function HomePage() {
       // 3) Update UI + localStorage
       setSkills((prev) => prev.filter((s) => s.id !== skill.id));
       removeLocalSkill(skill.id);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Failed to delete skill:', err);
       setError('Failed to delete this skill. Please try again.');
     } finally {
@@ -115,12 +116,12 @@ export default function HomePage() {
             Browse, filter, and manage your recorded skill demos.
           </p>
         </div>
-        <a
+        <Link
           href="/record"
           className="inline-flex items-center justify-center rounded-md border border-sky-500/60 bg-sky-500/10 px-3 py-1.5 text-sm font-medium text-sky-200 hover:bg-sky-500/20"
         >
           + Record new skill
-        </a>
+        </Link>
       </div>
 
       <SkillFilters

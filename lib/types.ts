@@ -10,3 +10,14 @@ export interface SkillNode {
   createdAt: string;        // ISO string from DB
   description?: string;     // <-- NEW optional field
 }
+
+// Shape of the skill_nodes table coming back from Supabase queries.
+export interface SkillNodeRow {
+  id: string;
+  title: string;
+  category: string | null;
+  video_url: string;
+  created_at: string;
+  description: string | null;
+  device_id?: string | null;
+}

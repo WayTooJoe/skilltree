@@ -1,5 +1,6 @@
 // pages/record.tsx
 import type { NextPage } from "next";
+import Link from "next/link";
 import { RecordingGuide } from "../components/RecordingGuide";
 import { RecordSkillVideo } from "../components/RecordSkillVideo";
 
@@ -13,12 +14,12 @@ const RecordPage: NextPage = () => {
           </span>
           <span className="font-semibold text-lg">Record a Skill</span>
         </div>
-        <a
+        <Link
           href="/"
           className="text-sm text-slate-300 hover:text-emerald-400"
         >
           Back to home
-        </a>
+        </Link>
       </header>
 
       <section className="px-4 py-6 md:px-8 flex flex-col items-center gap-6">
