@@ -54,9 +54,15 @@ export default function VideoUploadTestPage() {
       if (updateError) throw updateError;
 
       setMessage("✅ Video uploaded and skill_node.video_url updated.");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setMessage(`❌ Error: ${err.message ?? "Something went wrong"}`);
+      const message =
+        err instanceof Error
+          ? err.message
+          : typeof err === "string"
+            ? err
+            : "Something went wrong";
+      setMessage(`❌ Error: ${message}`);
     } finally {
       setUploading(false);
     }

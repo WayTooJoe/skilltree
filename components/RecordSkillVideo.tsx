@@ -13,6 +13,12 @@ interface Props {
 
 type RecordingState = 'idle' | 'recording' | 'preview';
 
+function getErrorMessage(err: unknown): string {
+  if (err instanceof Error) return err.message;
+  if (typeof err === 'string') return err;
+  return 'An unexpected error occurred.';
+}
+
 export default function RecordSkillVideo({ onCreated }: Props) {
   const [supported, setSupported] = useState(false);
   const [title, setTitle] = useState('');
@@ -88,7 +94,7 @@ export default function RecordSkillVideo({ onCreated }: Props) {
       mediaRecorderRef.current = recorder;
       recorder.start();
       setRecordingState('recording');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error starting recording:', err);
       setError('Could not access your camera and microphone.');
     }
@@ -160,14 +166,15 @@ export default function RecordSkillVideo({ onCreated }: Props) {
 
       // 5) reset recording state
       resetRecording();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error uploading skill video:', err);
+      const message = getErrorMessage(err);
       try {
         console.error('Error as JSON:', JSON.stringify(err));
       } catch {
         // ignore
       }
-      setError('Upload failed. Please check console for details.');
+      setError(`Upload failed. ${message}`);
     } finally {
       setUploading(false);
     }

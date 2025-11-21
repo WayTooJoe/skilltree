@@ -1,5 +1,6 @@
 // app/skill/[id]/page.tsx
 
+import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
 import { getPublicVideoUrl } from '@/lib/storage';
 import { SkillNode } from '@/lib/types';
@@ -41,9 +42,9 @@ export default async function SkillDetailPage({ params }: PageProps) {
   if (!skill) {
     return (
       <div className="space-y-3">
-        <a href="/" className="text-sm text-sky-300 hover:text-sky-200">
+        <Link href="/" className="text-sm text-sky-300 hover:text-sky-200">
           ← Back to skills
-        </a>
+        </Link>
         <p className="text-sm text-slate-400">
           Skill not found or has been deleted.
         </p>
@@ -55,9 +56,9 @@ export default async function SkillDetailPage({ params }: PageProps) {
 
   return (
     <div className="space-y-4">
-      <a href="/" className="text-sm text-sky-300 hover:text-sky-200">
+      <Link href="/" className="text-sm text-sky-300 hover:text-sky-200">
         ← Back to skills
-      </a>
+      </Link>
 
       <div className="space-y-1">
         <h2 className="text-2xl font-semibold tracking-tight">

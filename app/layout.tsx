@@ -2,6 +2,7 @@
 
 import './globals.css';
 import type { Metadata } from 'next';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'SkillTree',
@@ -23,12 +24,12 @@ export default function RootLayout({
                 SkillTree
               </h1>
               <nav className="flex gap-4 text-sm text-slate-300">
-                <a href="/" className="hover:text-white">
+                <Link href="/" className="hover:text-white">
                   Skills
-                </a>
-                <a href="/record" className="hover:text-white">
+                </Link>
+                <Link href="/record" className="hover:text-white">
                   Record
-                </a>
+                </Link>
               </nav>
             </div>
           </header>
