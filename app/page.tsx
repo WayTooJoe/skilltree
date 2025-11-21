@@ -39,14 +39,15 @@ export default function HomePage() {
         setError('Failed to load skills from the cloud.');
         return;
       }
-
+     
       const mapped: SkillNode[] =
         data?.map((row: any) => ({
           id: row.id,
           title: row.title,
           category: row.category ?? 'Other',
-          videoPath: row.video_path,
+          videoPath: row.video_url,
           createdAt: row.created_at,
+          description: row.description ?? undefined,
         })) ?? [];
 
       setSkills(mapped);

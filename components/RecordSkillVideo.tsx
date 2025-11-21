@@ -17,6 +17,7 @@ export default function RecordSkillVideo({ onCreated }: Props) {
   const [supported, setSupported] = useState(false);
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState<SkillCategory>('Technical');
+  const [description, setDescription] = useState('');
 
   const [recordingState, setRecordingState] = useState<RecordingState>('idle');
   const [error, setError] = useState<string | null>(null);
@@ -126,14 +127,16 @@ export default function RecordSkillVideo({ onCreated }: Props) {
       // 1) upload to storage
       const { path } = await uploadSkillVideoFile(file, skillId);
 
-      // 2) insert into DB
+      // 2) insert into DB (align with your columns)
       const { data, error } = await supabase
         .from('skill_nodes')
         .insert({
           id: skillId,
           title: title.trim(),
           category,
-          video_path: path,
+          device_id: 'web',              // NEW: satisfy NOT NULL constraint
+          video_url: path,               // NEW: matches your column name
+          description: description.trim() || null,
         })
         .select('*')
         .single();
@@ -144,8 +147,9 @@ export default function RecordSkillVideo({ onCreated }: Props) {
         id: data.id,
         title: data.title,
         category: data.category ?? category,
-        videoPath: data.video_path,
+        videoPath: data.video_url,       // map DB column to our field
         createdAt: data.created_at,
+        description: data.description ?? undefined,
       };
 
       // 3) sync localStorage
@@ -154,11 +158,16 @@ export default function RecordSkillVideo({ onCreated }: Props) {
       // 4) notify parent
       onCreated?.(created);
 
-      // 5) reset UI (keep title/category to allow many recordings)
+      // 5) reset recording state
       resetRecording();
     } catch (err: any) {
       console.error('Error uploading skill video:', err);
-      setError('Upload failed. Please try again.');
+      try {
+        console.error('Error as JSON:', JSON.stringify(err));
+      } catch {
+        // ignore
+      }
+      setError('Upload failed. Please check console for details.');
     } finally {
       setUploading(false);
     }
@@ -176,33 +185,52 @@ export default function RecordSkillVideo({ onCreated }: Props) {
 
   return (
     <div className="rounded-lg border border-slate-800 bg-slate-900/70 p-4 space-y-4">
-      <div className="grid gap-3 sm:grid-cols-[2fr,1fr] sm:items-end">
-        <div className="space-y-2">
-          <label className="block text-xs font-medium text-slate-300">
-            Skill title
-          </label>
-          <input
-            type="text"
-            className="w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm outline-none focus:border-sky-500"
-            placeholder="Example: Explaining NIST CSF to non-technical leaders"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
+      <div className="space-y-3">
+        <div className="grid gap-3 sm:grid-cols-[2fr,1fr] sm:items-end">
+          <div className="space-y-2">
+            <label className="block text-xs font-medium text-slate-300">
+              Skill title
+            </label>
+            <input
+              type="text"
+              className="w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm outline-none focus:border-sky-500"
+              placeholder="Example: Explaining NIST CSF to non-technical leaders"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-xs font-medium text-slate-300">
+              Category
+            </label>
+            <select
+              className="w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm outline-none focus:border-sky-500"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            >
+              <option value="Technical">Technical</option>
+              <option value="Soft">Soft</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
         </div>
 
+        {/* Description field */}
         <div className="space-y-2">
           <label className="block text-xs font-medium text-slate-300">
-            Category
+            Description (optional)
           </label>
-          <select
-            className="w-full rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm outline-none focus:border-sky-500"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-          >
-            <option value="Technical">Technical</option>
-            <option value="Soft">Soft</option>
-            <option value="Other">Other</option>
-          </select>
+          <textarea
+            className="w-full min-h-[70px] rounded-md border border-slate-700 bg-slate-950 px-3 py-2 text-sm outline-none focus:border-sky-500"
+            placeholder="Example: Quick overview of how I explain the NIST CSF functions to non-technical stakeholders using analogies."
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+          <p className="text-[11px] text-slate-500">
+            Use this to capture context, scenario, or key talking points for this
+            demo.
+          </p>
         </div>
       </div>
 

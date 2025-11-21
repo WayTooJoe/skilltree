@@ -21,17 +21,25 @@ export default function SkillListItem({ skill, disabled, onDelete }: Props) {
 
   return (
     <div className="rounded-lg border border-slate-800 bg-slate-900/60 px-3 py-2.5 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-      <div className="space-y-1">
+           <div className="space-y-1">
         <div className="flex items-center gap-2">
           <h3 className="text-sm font-medium">{skill.title}</h3>
           <span className="text-[10px] uppercase tracking-wide text-slate-400 border border-slate-700 rounded-full px-2 py-0.5">
             {skill.category}
           </span>
         </div>
-        <p className="text-xs text-slate-500">
+
+        {skill.description && (
+          <p className="text-xs text-slate-300 line-clamp-2">
+            {skill.description}
+          </p>
+        )}
+
+        <p className="text-[11px] text-slate-500">
           {new Date(skill.createdAt).toLocaleString()}
         </p>
       </div>
+
 
       <div className="flex flex-wrap items-center gap-2">
         <button

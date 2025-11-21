@@ -2,7 +2,7 @@
 
 import { supabase } from './supabaseClient';
 
-const SKILL_BUCKET = 'skill_videos'; // make sure this matches your bucket name
+const SKILL_BUCKET = 'videos'; // make sure this matches your bucket name
 
 // Note: path can be undefined/null for old/bad data, so handle that safely.
 export function getPublicVideoUrl(path: string | null | undefined): string {
